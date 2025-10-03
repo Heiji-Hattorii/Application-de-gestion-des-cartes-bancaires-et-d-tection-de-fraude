@@ -1,5 +1,5 @@
 package Entity;
 
-public class Client {
-
+public record Client (String id,String name,String email,String Telephone) {
+	
 }
