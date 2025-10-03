@@ -1,5 +1,4 @@
 # Application-de-gestion-des-cartes-bancaires-et-d-tection-de-fraude
-# Gestion des cartes bancaires et détection de fraude
 
 ## Contexte
 Application Java 17 pour gérer les cartes bancaires (débit, crédit, prépayée), suivre les transactions et détecter automatiquement les fraudes (ex. opérations suspectes ou dépassement de plafond).
