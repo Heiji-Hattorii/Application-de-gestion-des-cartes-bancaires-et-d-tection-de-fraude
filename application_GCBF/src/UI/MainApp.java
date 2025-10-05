@@ -4,6 +4,7 @@ import Entity.*;
 import Service.ClientService;
 import Service.CarteService;
 import Service.OperationCarteService;
+import Service.AlerteFraudeService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,10 +16,10 @@ public class MainApp {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        // Instanciation des services
         ClientService clientService = new ClientService();
         CarteService carteService = new CarteService();
         OperationCarteService opService = new OperationCarteService();
+        AlerteFraudeService alerteService = new AlerteFraudeService();
 
         int choixPrincipal;
         do {
@@ -26,6 +27,7 @@ public class MainApp {
             System.out.println("1. Gestion des clients");
             System.out.println("2. Gestion des cartes");
             System.out.println("3. Gestion des opérations");
+            System.out.println("4. Gestion des alertes de fraude");
             System.out.println("0. Quitter");
             System.out.print("Votre choix : ");
             choixPrincipal = sc.nextInt();
@@ -35,6 +37,7 @@ public class MainApp {
                 case 1 -> menuClients(sc, clientService);
                 case 2 -> menuCartes(sc, carteService);
                 case 3 -> menuOperations(sc, opService);
+                case 4 -> menuAlertes(sc, alerteService);
                 case 0 -> System.out.println("Au revoir !");
                 default -> System.out.println("Choix invalide !");
             }
@@ -264,6 +267,64 @@ public class MainApp {
                         System.out.println("Aucune opération enregistrée !");
                     else
                         ops.forEach(System.out::println);
+                }
+                case 0 -> System.out.println("Retour au menu principal");
+                default -> System.out.println("Choix invalide !");
+            }
+
+        } while (choix != 0);
+    }
+
+    // ================= MENU ALERTES =================
+    private static void menuAlertes(Scanner sc, AlerteFraudeService alerteService) {
+        int choix;
+        do {
+            System.out.println("\n===== MENU ALERTES DE FRAUDE =====");
+            System.out.println("1. Ajouter une alerte");
+            System.out.println("2. Supprimer une alerte");
+            System.out.println("3. Rechercher une alerte par ID");
+            System.out.println("4. Lister toutes les alertes");
+            System.out.println("0. Retour au menu principal");
+            System.out.print("Votre choix : ");
+            choix = sc.nextInt();
+            sc.nextLine();
+
+            switch (choix) {
+                case 1 -> {
+                    System.out.print("ID alerte : ");
+                    String id = sc.nextLine();
+                    System.out.print("Description : ");
+                    String description = sc.nextLine();
+                    System.out.print("Niveau (INFO, AVERTISSEMENT, CRITIQUE) : ");
+                    NiveauAlerte niveau = NiveauAlerte.valueOf(sc.nextLine().toUpperCase());
+                    System.out.print("ID carte : ");
+                    String idCarte = sc.nextLine();
+
+                    if (alerteService.creerAlerte(id, description, niveau, idCarte))
+                        System.out.println("Alerte ajoutée !");
+                    else
+                        System.out.println("Erreur lors de l'ajout !");
+                }
+                case 2 -> {
+                    System.out.print("ID alerte : ");
+                    String id = sc.nextLine();
+                    if (alerteService.supprimerAlerte(id))
+                        System.out.println("Alerte supprimée !");
+                    else
+                        System.out.println("Erreur lors de la suppression !");
+                }
+                case 3 -> {
+                    System.out.print("ID alerte : ");
+                    String id = sc.nextLine();
+                    alerteService.rechercherAlerte(id)
+                            .ifPresentOrElse(System.out::println, () -> System.out.println("Alerte introuvable !"));
+                }
+                case 4 -> {
+                    List<AlerteFraude> alertes = alerteService.listerAlertes();
+                    if (alertes.isEmpty())
+                        System.out.println("Aucune alerte enregistrée !");
+                    else
+                        alertes.forEach(System.out::println);
                 }
                 case 0 -> System.out.println("Retour au menu principal");
                 default -> System.out.println("Choix invalide !");
