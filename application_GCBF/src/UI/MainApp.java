@@ -3,6 +3,7 @@ package UI;
 import Entity.*;
 import Service.ClientService;
 import Service.CarteService;
+import Service.OperationCarteService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,16 +11,21 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class MainApp {
+
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Instanciation des services
         ClientService clientService = new ClientService();
         CarteService carteService = new CarteService();
-        Scanner sc = new Scanner(System.in);
-        int choixPrincipal;
+        OperationCarteService opService = new OperationCarteService();
 
+        int choixPrincipal;
         do {
             System.out.println("\n===== MENU PRINCIPAL =====");
             System.out.println("1. Gestion des clients");
             System.out.println("2. Gestion des cartes");
+            System.out.println("3. Gestion des opérations");
             System.out.println("0. Quitter");
             System.out.print("Votre choix : ");
             choixPrincipal = sc.nextInt();
@@ -28,6 +34,7 @@ public class MainApp {
             switch (choixPrincipal) {
                 case 1 -> menuClients(sc, clientService);
                 case 2 -> menuCartes(sc, carteService);
+                case 3 -> menuOperations(sc, opService);
                 case 0 -> System.out.println("Au revoir !");
                 default -> System.out.println("Choix invalide !");
             }
@@ -71,7 +78,6 @@ public class MainApp {
                     else
                         System.out.println("Erreur lors de l'ajout du client.");
                 }
-
                 case 2 -> {
                     System.out.print("ID du client à modifier : ");
                     String id = sc.nextLine();
@@ -94,7 +100,6 @@ public class MainApp {
                         System.out.println("Client introuvable !");
                     }
                 }
-
                 case 3 -> {
                     System.out.print("ID du client à supprimer : ");
                     String id = sc.nextLine();
@@ -103,7 +108,6 @@ public class MainApp {
                     else
                         System.out.println("Suppression échouée !");
                 }
-
                 case 4 -> {
                     List<Client> clients = clientService.listerClients();
                     if (clients.isEmpty())
@@ -111,28 +115,24 @@ public class MainApp {
                     else
                         clients.forEach(System.out::println);
                 }
-
                 case 5 -> {
                     System.out.print("ID du client : ");
                     String id = sc.nextLine();
-                    Optional<Client> clientOpt = clientService.rechercherClientParId(id);
-                    clientOpt.ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
+                    clientService.rechercherClientParId(id)
+                            .ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
                 }
-
                 case 6 -> {
                     System.out.print("Email du client : ");
                     String email = sc.nextLine();
-                    Optional<Client> clientOpt = clientService.rechercherClientParEmail(email);
-                    clientOpt.ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
+                    clientService.rechercherClientParEmail(email)
+                            .ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
                 }
-
                 case 7 -> {
                     System.out.print("Téléphone du client : ");
                     String tel = sc.nextLine();
-                    Optional<Client> clientOpt = clientService.rechercherClientParTelephone(tel);
-                    clientOpt.ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
+                    clientService.rechercherClientParTelephone(tel)
+                            .ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
                 }
-
                 case 0 -> System.out.println("Retour au menu principal");
                 default -> System.out.println("Choix invalide !");
             }
@@ -180,7 +180,6 @@ public class MainApp {
                     else
                         System.out.println("Erreur lors de l'ajout !");
                 }
-
                 case 2 -> {
                     System.out.print("ID carte : ");
                     String idCarte = sc.nextLine();
@@ -191,7 +190,6 @@ public class MainApp {
                     else
                         System.out.println("Erreur lors de la modification !");
                 }
-
                 case 3 -> {
                     System.out.print("ID carte : ");
                     String idCarte = sc.nextLine();
@@ -200,19 +198,73 @@ public class MainApp {
                     else
                         System.out.println("Erreur lors de la suppression !");
                 }
-
-                case 4 -> {
-                    List<Carte> cartes = carteService.listerCartes();
-                    cartes.forEach(System.out::println);
-                }
-
+                case 4 -> carteService.listerCartes().forEach(System.out::println);
                 case 5 -> {
                     System.out.print("ID client : ");
                     String idClient = sc.nextLine();
-                    List<Carte> cartes = carteService.rechercherCartesParClient(idClient);
-                    cartes.forEach(System.out::println);
+                    carteService.rechercherCartesParClient(idClient).forEach(System.out::println);
                 }
+                case 0 -> System.out.println("Retour au menu principal");
+                default -> System.out.println("Choix invalide !");
+            }
 
+        } while (choix != 0);
+    }
+
+    // ================= MENU OPÉRATIONS =================
+    private static void menuOperations(Scanner sc, OperationCarteService opService) {
+        int choix;
+        do {
+            System.out.println("\n===== MENU OPÉRATIONS CARTE =====");
+            System.out.println("1. Ajouter une opération");
+            System.out.println("2. Supprimer une opération");
+            System.out.println("3. Rechercher une opération par ID");
+            System.out.println("4. Lister toutes les opérations");
+            System.out.println("0. Retour au menu principal");
+            System.out.print("Votre choix : ");
+            choix = sc.nextInt();
+            sc.nextLine();
+
+            switch (choix) {
+                case 1 -> {
+                    System.out.print("ID opération : ");
+                    String id = sc.nextLine();
+                    System.out.print("Montant : ");
+                    double montant = sc.nextDouble();
+                    sc.nextLine();
+                    System.out.print("Type (ACHAT, RETRAIT, PAIEMENTENLIGNE) : ");
+                    TypeOperation type = TypeOperation.valueOf(sc.nextLine().toUpperCase());
+                    System.out.print("Lieu : ");
+                    String lieu = sc.nextLine();
+                    System.out.print("ID carte : ");
+                    String idCarte = sc.nextLine();
+
+                    if (opService.ajouterOperation(id, montant, type, lieu, idCarte))
+                        System.out.println("Opération ajoutée !");
+                    else
+                        System.out.println("Erreur lors de l'ajout !");
+                }
+                case 2 -> {
+                    System.out.print("ID opération : ");
+                    String id = sc.nextLine();
+                    if (opService.supprimerOperation(id))
+                        System.out.println("Opération supprimée !");
+                    else
+                        System.out.println("Erreur lors de la suppression !");
+                }
+                case 3 -> {
+                    System.out.print("ID opération : ");
+                    String id = sc.nextLine();
+                    opService.rechercherParId(id)
+                            .ifPresentOrElse(System.out::println, () -> System.out.println("Opération introuvable !"));
+                }
+                case 4 -> {
+                    List<OperationCarte> ops = opService.listerOperations();
+                    if (ops.isEmpty())
+                        System.out.println("Aucune opération enregistrée !");
+                    else
+                        ops.forEach(System.out::println);
+                }
                 case 0 -> System.out.println("Retour au menu principal");
                 default -> System.out.println("Choix invalide !");
             }
