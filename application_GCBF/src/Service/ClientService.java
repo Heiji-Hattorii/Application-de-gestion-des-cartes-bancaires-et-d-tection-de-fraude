@@ -31,4 +31,12 @@ public class ClientService {
     public Optional<Client> rechercherClientParId(String id) {
         return clientDAO.rechercherClientParId(id);
     }
+
+    public Optional<Client> rechercherClientParEmail(String email) {
+        return clientDAO.rechercherClientParEmail(email);
+    }
+
+    public Optional<Client> rechercherClientParTelephone(String telephone) {
+        return clientDAO.rechercherClientParTelephone(telephone);
+    }
 }

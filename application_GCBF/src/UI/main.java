@@ -19,6 +19,8 @@ public class main {
             System.out.println("3. Supprimer un client");
             System.out.println("4. Afficher tous les clients");
             System.out.println("5. Rechercher un client par ID");
+            System.out.println("6. Rechercher un client par email");
+            System.out.println("7. Rechercher un client par telephone");
             System.out.println("0. Quitter");
             System.out.print("Votre choix : ");
             choix = sc.nextInt();
@@ -88,10 +90,22 @@ public class main {
                     Optional<Client> clientOpt = clientService.rechercherClientParId(id);
                     clientOpt.ifPresentOrElse(
                             System.out::println,
-                            () -> System.out.println("Client introuvable !")
-                    );
+                            () -> System.out.println("Client introuvable !"));
                 }
+                case 6 -> {
+                    System.out.print("Email du client à rechercher : ");
+                    String email = sc.nextLine();
+                    Optional<Client> clientOpt = clientService.rechercherClientParEmail(email);
+                    clientOpt.ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
 
+                }
+                case 7 -> {
+                    System.out.print("Téléphone du client à rechercher : ");
+                    String tel = sc.nextLine();
+                    Optional<Client> clientOpt = clientService.rechercherClientParTelephone(tel);
+                    clientOpt.ifPresentOrElse(System.out::println, () -> System.out.println("Client introuvable !"));
+
+                }
                 case 0 -> System.out.println("Au revoir !");
                 default -> System.out.println("Choix invalide !");
             }

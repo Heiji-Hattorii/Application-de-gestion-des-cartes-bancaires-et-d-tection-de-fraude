@@ -89,7 +89,7 @@ public class ClientDAO {
     }
 
     public Optional<Client> rechercherClientParEmail(String email) {
-        String sql = "SELECT * FROM client WHERE email = ?";
+        String sql = "SELECT * FROM clients WHERE email = ?";
         try (Connection con = getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -112,7 +112,7 @@ public class ClientDAO {
     }
 
     public Optional<Client> rechercherClientParTelephone(String telephone) {
-        String sql = "SELECT * FROM client WHERE Telephone = ?";
+        String sql = "SELECT * FROM clients WHERE Telephone = ?";
         try (Connection con = getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
 
